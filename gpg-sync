@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#echo "early version, edit script and be sure to have a backup of .gnupg!!"
+#exit 1
+
+if [ $# -eq 0 ] || [ "$1" == "-h" ]; then
+  echo "sync gpg keyring 2-way over ssh
+  usage: gpg-sync user@targethost [sshopts]"
+  exit
+fi
+
+GPG="gpg"
+EXPORT_SEC="--export-secret-keys --export-options=export-local-sigs,export-sensitive-revkeys"
+EXPORT_PUB="--export --export-options=export-local-sigs,export-sensitive-revkeys"
+IMPORT="--import --allow-non-selfsigned-uid --import-options=import-local-sigs -"
+EXPORT_OWNERTRUST="--export-ownertrust"
+IMPORT_OWNERTRUST="--import-ownertrust"
+
+
+$GPG $EXPORT_SEC  | ssh $@ $GPG $IMPORT
+ssh $@ $GPG $EXPORT_SEC | $GPG $IMPORT
+
+$GPG $EXPORT_PUB  | ssh $@ $GPG $IMPORT
+ssh $@ $GPG $EXPORT_PUB | $GPG $IMPORT
+
+#base64 is easier than replace newlines or tmpfile
+$GPG $EXPORT_OWNERTRUST | base64 | ssh $@ base64 -d | $GPG $IMPORT_OWNERTRUST
+ssh $@ $GPG $EXPORT_OWNERTRUST \| base64 | base64 -d | $GPG $IMPORT_OWNERTRUST
+
+$GPG --check-trustdb
+ssh $@ $GPG --check-trustdb
