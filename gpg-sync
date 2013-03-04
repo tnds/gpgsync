@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#echo "early version, edit script and be sure to have a backup of .gnupg!!"
-#exit 1
+echo "early version, edit script and be sure to have a backup of .gnupg!!"
+exit 1
 
 if [ $# -eq 0 ] || [ "$1" == "-h" ]; then
   echo "sync gpg keyring 2-way over ssh
