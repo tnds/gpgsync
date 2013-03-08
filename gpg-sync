@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "early version, edit script and be sure to have a backup of .gnupg!!"
-exit 1
+#echo "early version, edit script and be sure to have a backup of .gnupg!!"
+#exit 1
 
 if [ $# -eq 0 ] || [ "$1" == "-h" ]; then
   echo "sync gpg keyring 2-way over ssh
@@ -24,8 +24,8 @@ $GPG $EXPORT_PUB  | ssh $@ $GPG $IMPORT
 ssh $@ $GPG $EXPORT_PUB | $GPG $IMPORT
 
 #base64 is easier than replace newlines or tmpfile
-$GPG $EXPORT_OWNERTRUST | base64 | ssh $@ base64 -d | $GPG $IMPORT_OWNERTRUST
-ssh $@ $GPG $EXPORT_OWNERTRUST \| base64 | base64 -d | $GPG $IMPORT_OWNERTRUST
+$GPG $EXPORT_OWNERTRUST | grep -v "^#" | ssh $@ $GPG $IMPORT_OWNERTRUST
+ssh $@ $GPG $EXPORT_OWNERTRUST \| grep -v "^#" | $GPG $IMPORT_OWNERTRUST
 
 $GPG --check-trustdb
 ssh $@ $GPG --check-trustdb
