@@ -23,7 +23,6 @@ ssh $@ $GPG $EXPORT_SEC | $GPG $IMPORT
 $GPG $EXPORT_PUB  | ssh $@ $GPG $IMPORT
 ssh $@ $GPG $EXPORT_PUB | $GPG $IMPORT
 
-#base64 is easier than replace newlines or tmpfile
 $GPG $EXPORT_OWNERTRUST | grep -v "^#" | ssh $@ $GPG $IMPORT_OWNERTRUST
 ssh $@ $GPG $EXPORT_OWNERTRUST \| grep -v "^#" | $GPG $IMPORT_OWNERTRUST
 
